@@ -1,7 +1,12 @@
 # Roteiro do vídeo — método STAR (≤ 5 min)
 
-> Dica de gravação: tela do VS Code / navegador + câmera no canto. Deixe abertos antes de gravar:
-> `README.md`, `reports/monitoring_dashboard.html`, `reports/drift/month_06.html`, o terminal na raiz do repo e a UI do MLflow (`make mlflow`).
+> Dica de gravação: tela do navegador + câmera no canto. Abas para deixar abertas antes de gravar:
+> 1. Site do projeto: https://rochathayna.github.io/tech-challenge-fase4-credit-monitoring/
+> 2. Dashboard: `…/reports/monitoring_dashboard.html` (link no site)
+> 3. Relatório Evidently do mês 6: `…/reports/drift/month_06.html` (link no site)
+> 4. GitHub: `src/contracts.py` e `src/simulate_drift.py`
+> 5. *(se tiver Docker)* Grafana em http://localhost:3000 com `make grafana` rodando há ~1 min (replay em andamento)
+> 6. *(opcional)* MLflow (`make mlflow`) e Evidently UI (`make evidently-ui`), após `make all`
 
 ---
 
@@ -25,12 +30,12 @@
 **2. Modelo e simulação do drift (1:55 – 2:35).** Tela: `src/simulate_drift.py` (docstring).
 > "Treinamos um XGBoost com AUC de 0,95. Depois simulamos seis meses de produção com quatro mecanismos: mudança no perfil de clientes, inflação, alta de juros, que são *data drift*, e estresse econômico, que é *concept drift*: o mesmo cliente passa a ter mais chance de não pagar."
 
-**3. Detecção e observabilidade (2:35 – 3:30).** Tela: `reports/drift/month_06.html` → MLflow (runs por mês) → dashboard.
-> "Para cada mês, o **Evidently** compara produção com referência usando PSI e Kolmogorov-Smirnov. Confirmamos drift só quando há efeito relevante (PSI ≥ 0,1) *e* significância (p < 0,05). Tudo vai para um log estruturado central, que alimenta o **MLflow**, com um run por lote, as métricas do **Prometheus** e este dashboard."
+**3. Detecção e observabilidade (2:35 – 3:30).** Tela: relatório Evidently do mês 6 → Grafana (ou as capturas do Prometheus no site) → MLflow.
+> "Para cada mês, o **Evidently** compara produção com referência usando PSI e Kolmogorov-Smirnov. Confirmamos drift só quando há efeito relevante (PSI ≥ 0,1) *e* significância (p < 0,05). Tudo vai para um log estruturado central. Dele saem o **MLflow**, com um run por lote, o **Evidently UI** com o histórico, e um exporter para o **Prometheus**, que tem 7 regras de alerta, como queda de AUC, dataset drift e lote bloqueado. O **Grafana** mostra a degradação acontecendo mês a mês."
 
 ## R — Result (3:30 – 5:00)
 
-**Tela:** dashboard: KPIs → gráfico de AUC → heatmap PSI → tabela de alertas → análise causal.
+**Tela:** site do projeto → dashboard: KPIs → gráfico de AUC → heatmap PSI → tabela de alertas → análise causal.
 
 > "O resultado: o modelo sai de 0,94 para 0,88 de AUC. O primeiro alerta crítico aparece no **mês 3**, dois meses antes de o drift do dataset agregado aparecer. Juros, comprometimento de renda, valor do empréstimo e grade são as features degradadas.
 >
@@ -47,5 +52,6 @@
 - [ ] Mostrar o lote sendo **bloqueado** no terminal (linha `batch_blocked`)
 - [ ] Mostrar o relatório Evidently com features "Detected"
 - [ ] Mostrar o dashboard com alertas
+- [ ] Mostrar o site do GitHub Pages (o professor consegue abrir tudo por ele)
 - [ ] Mencionar base legal + retenção + art. 20
-- [ ] Colar o link no topo do README
+- [ ] (Opcional) colar o link do vídeo no topo do README

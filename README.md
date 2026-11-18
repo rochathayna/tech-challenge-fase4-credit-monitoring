@@ -2,6 +2,7 @@
 
 > **Contexto.** Uma fintech de crédito tem um modelo de *Credit Scoring* em produção. Inflação, alta de juros e novos perfis de clientes levantaram a suspeita de **degradação silenciosa**. Este repositório constrói a camada de **sustentação e confiabilidade** do modelo: contratos de dados que barram lixo na entrada, simulação e detecção de *data drift* e *concept drift*, observabilidade centralizada do pipeline, análise causal da degradação e governança sob a LGPD.
 
+> ### 🌐 [Abrir o site do projeto](https://rochathayna.github.io/tech-challenge-fase4-credit-monitoring/): dashboard, relatórios Evidently e evidências direto no navegador, sem instalar nada
 
 ---
 
@@ -18,7 +19,7 @@
 - **Contratos de dados:** 3 lotes bloqueados (dado bruto do Kaggle com 4.390 registros inválidos, lote corrompido de parceiro e o 1º envio do mês 4), 7 aceitos.
 - **Análise causal:** o *concept drift* (estresse econômico) é o mecanismo que mais derruba a AUC (−0,080) e dobra a inadimplência entre aprovados, mas **não dispara nenhum alerta de data drift**. Já a mudança no perfil de clientes gera ~30 % das features com drift e **não piora** a AUC. Ou seja, monitorar só a distribuição das features não basta.
 
-Evidências geradas automaticamente (versionadas em `reports/`):
+Evidências geradas automaticamente (versionadas em `reports/` e publicadas no [site](https://rochathayna.github.io/tech-challenge-fase4-credit-monitoring/)):
 
 | Artefato | O que mostra |
 |---|---|
@@ -31,6 +32,9 @@ Evidências geradas automaticamente (versionadas em `reports/`):
 | [`logs/pipeline.jsonl`](logs/pipeline.jsonl) | Log estruturado centralizado de todas as etapas |
 | [`models/model_card.json`](models/model_card.json) | Model card: métricas, importância de features, fairness por grupo |
 | `mlflow.db` / `mlartifacts/` | Rastreamento MLflow (regenerado ao executar) |
+| `evidently_workspace/` | Projeto do **Evidently UI** com o histórico mensal (regenerado ao executar) |
+| [`monitoring/`](monitoring/) | Stack **Prometheus + Grafana** (docker-compose, 7 regras de alerta, dashboard provisionado) |
+| [`docs/img/`](docs/img/) | Capturas das UIs (MLflow, Evidently UI, Prometheus) |
 
 ---
 
@@ -40,11 +44,13 @@ Evidências geradas automaticamente (versionadas em `reports/`):
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 
-make all          # = python -m src.pipeline  (≈ 30 s, executa as 4 etapas ponta a ponta)
-make test         # 13 testes (contratos e estatísticas de drift)
-make mlflow       # UI do MLflow em http://127.0.0.1:5000
-make dashboard    # abre reports/monitoring_dashboard.html
-make metrics      # expõe as métricas em http://localhost:8000/metrics para o Prometheus
+make all            # = python -m src.pipeline  (≈ 30 s, executa as 4 etapas ponta a ponta)
+make test           # 13 testes (contratos e estatísticas de drift)
+make dashboard      # abre reports/monitoring_dashboard.html
+make mlflow         # MLflow UI      → http://127.0.0.1:5000
+make evidently-ui   # Evidently UI   → http://127.0.0.1:8001  (painel histórico mês a mês)
+make grafana        # docker compose → Grafana http://localhost:3000 · Prometheus http://localhost:9090
+make site           # gera o site estático (_site/) publicado no GitHub Pages
 ```
 
 Em produção, a chave de pseudonimização deve vir de um cofre: `export PII_HMAC_KEY=...` (sem ela, usa-se uma chave de desenvolvimento).
@@ -63,8 +69,9 @@ flowchart LR
     F --> G[Alertas]
     C & D & F & G --> H[(logs/pipeline.jsonl)]
     H --> I[MLflow]
-    H --> J[Prometheus]
-    H --> K[Dashboard HTML]
+    F --> EU[Evidently UI]
+    H --> X[exporter /metrics] --> J[Prometheus<br/>regras de alerta] --> GR[Grafana]
+    H --> K[Dashboard HTML] --> GP[GitHub Pages]
 ```
 
 ```
@@ -79,10 +86,15 @@ flowchart LR
 │   ├── drift_stats.py           # PSI, KS e Qui² implementados do zero
 │   ├── detect_drift.py          # relatórios Evidently + regras de alerta
 │   ├── causal.py                # intervenções do(·) por mecanismo
-│   ├── monitoring.py            # MLflow por lote, Prometheus, dashboard
+│   ├── monitoring.py            # MLflow por lote, Prometheus textfile, dashboard HTML
+│   ├── evidently_workspace.py   # projeto + painéis do Evidently UI
+│   ├── exporter.py              # exporter Prometheus (/metrics) com modo replay
+│   ├── build_site.py            # site estático do GitHub Pages
 │   ├── logging_utils.py         # logs estruturados JSON Lines
 │   └── pipeline.py              # orquestrador ponta a ponta
+├── monitoring/                  # docker-compose Prometheus + Grafana, alertas, dashboard
 ├── tests/                       # pytest
+├── .github/workflows/           # CI (testes + pipeline) e deploy do GitHub Pages
 ├── reports/  logs/  models/     # evidências geradas
 └── docs/roteiro_video_STAR.md
 ```
@@ -180,9 +192,25 @@ Variáveis alteradas intencionalmente: `person_income`, `loan_amnt`, `loan_int_r
 
 **MLflow.** Experimento `credit-scoring-baseline` (treino, model card, fairness, modelo) e experimento `credit-scoring-production-monitoring` (um run por lote, com 25+ métricas incluindo PSI de cada feature, AUC, latência, alertas e o HTML do Evidently como artefato). `make mlflow` abre a UI para comparar os runs ao longo do tempo.
 
-**Prometheus.** `reports/metrics.prom` (formato *textfile collector*) com `credit_feature_psi{feature}`, `credit_model_roc_auc`, `credit_bad_rate_approved`, `credit_drift_share`, `credit_drift_alerts_total{type}`, `credit_batches_total{result}`, `credit_stage_duration_seconds{stage}`. `make metrics` expõe em `:8000/metrics` para scrape (integração opcional com a Fase 3 / Grafana).
+![MLflow](docs/img/mlflow_runs.jpg)
 
-**Dashboard.** `reports/monitoring_dashboard.html`, autocontido e interativo (Plotly): KPIs, AUC × limiar, inadimplência real × prevista × aprovados, heatmap de PSI, features com drift, violações do contrato, saúde e latência do pipeline, tabela de alertas e análise causal.
+**Evidently UI.** Cada lote mensal vira um *run* do projeto "Credit Scoring — Produção" no workspace local do Evidently, com painéis de histórico: ROC AUC/recall/F1, fração de features com drift, PSI das features-chave, drift do score e do target, p-valores do KS (`make evidently-ui`).
+
+![Evidently UI](docs/img/evidently_ui.jpg)
+
+**Prometheus + Grafana** (`monitoring/`, integração com a Fase 3). `src/exporter.py` expõe em `/metrics` mais de 20 séries: `credit_model_roc_auc`, `credit_bad_rate_approved`, `credit_feature_psi{feature}`, `credit_feature_drift{feature}`, `credit_prediction_psi`, `credit_alerts_active{type,severity}`, `credit_batches_total{result}`, `credit_scoring_latency_ms`, `credit_pipeline_stage_duration_seconds{stage}`, entre outras. No modo `--replay`, o exporter "reproduz" a produção (um mês a cada 15 s) para o Grafana mostrar a degradação ao vivo. O Prometheus avalia **7 regras de alerta** ([`alerts.yml`](monitoring/prometheus/alerts.yml)): `ConceptDrift_AUC`, `DatasetDrift`, `FeatureDrift`, `PredictionDrift`, `Calibration`, `BadRateApprovedHigh`, `DataContractBatchBlocked`. O Grafana já sobe com datasource e o dashboard "Credit Scoring — Observabilidade" provisionados, com acesso anônimo. Também há um snapshot estático em `reports/metrics.prom`.
+
+```bash
+cd monitoring && docker compose up     # Grafana http://localhost:3000 · Prometheus http://localhost:9090
+```
+
+| Regras de alerta disparando (mês 6) | Séries de PSI e AUC durante o replay |
+|---|---|
+| ![Prometheus alertas](docs/img/prometheus_alerts.jpg) | ![Prometheus séries](docs/img/prometheus_psi_auc.jpg) |
+
+**Dashboard HTML.** `reports/monitoring_dashboard.html`, autocontido e interativo (Plotly), publicado no GitHub Pages: KPIs, AUC × limiar, inadimplência real × prevista × aprovados, heatmap de PSI, features com drift, violações do contrato, saúde e latência do pipeline, tabela de alertas e análise causal.
+
+![Dashboard](docs/img/dashboard.jpg)
 
 ### Métricas de saúde definidas
 
@@ -324,5 +352,5 @@ Atributos sensíveis não são usados, mas **proxies** podem reintroduzir discri
 ## Limitações e próximos passos
 
 - O drift é **simulado**. Em produção, a janela de rótulos (~90 dias) atrasa a detecção do concept drift; usar proxies como rolagem em 30 dias (*early default*).
-- Orquestração local; em produção o pipeline iria para Airflow/Prefect, com Prometheus + Grafana e alertas no Slack/PagerDuty.
+- Orquestração local; em produção o pipeline iria para Airflow/Prefect, com o Alertmanager do Prometheus roteando os alertas para Slack/PagerDuty.
 - Próximos passos: retreino automático com janela deslizante, explicações SHAP por decisão (art. 20) e features deflacionadas.
