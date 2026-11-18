@@ -59,6 +59,34 @@ def score(model: Pipeline, df: pd.DataFrame) -> pd.DataFrame:
     return out
 
 
+def fairness_report(scored: pd.DataFrame) -> dict:
+    """Taxa de aprovação, AUC e TPR por grupo — base para a análise de vieses (disparate impact)."""
+    groups = {
+        "faixa_etaria": pd.cut(scored["person_age"], [17, 25, 35, 200], labels=["18-25", "26-35", "36+"]),
+        "moradia": scored["person_home_ownership"],
+    }
+    out = {}
+    for gname, g in groups.items():
+        rows = {}
+        for level, part in scored.groupby(g, observed=True):
+            if len(part) < 30 or part[TARGET].nunique() < 2:
+                continue
+            good = part[part[TARGET] == 0]
+            rows[str(level)] = {
+                "n": int(len(part)),
+                "approval_rate": float((part[PREDICTION] == 0).mean()),
+                "default_rate_real": float(part[TARGET].mean()),
+                "roc_auc": float(roc_auc_score(part[TARGET], part[PREDICTION_PROBA])),
+                # TPR dos bons pagadores: chance de um bom pagador ser aprovado (equal opportunity)
+                "good_payer_approval_rate": float((good[PREDICTION] == 0).mean()),
+            }
+        ref = max(r["approval_rate"] for r in rows.values())
+        for r in rows.values():
+            r["disparate_impact"] = r["approval_rate"] / ref     # regra dos 4/5: alerta se < 0,8
+        out[gname] = rows
+    return out
+
+
 def train() -> dict:
     MODELS_DIR.mkdir(parents=True, exist_ok=True)
     ref = pd.read_csv(REFERENCE_PATH)
@@ -85,6 +113,9 @@ def train() -> dict:
         agg = {f: float(imp[[n for n in names if n.split("__", 1)[1].startswith(f)]].sum()) for f in FEATURES}
         importance = dict(sorted(agg.items(), key=lambda kv: -kv[1]))
 
+        fairness = fairness_report(val_scored)
+        mlflow.log_dict(fairness, "fairness.json")
+
         joblib.dump(model, MODEL_PATH)
         val_scored.to_csv(REFERENCE_SCORED_PATH, index=False)
         card = {
@@ -95,6 +126,7 @@ def train() -> dict:
             "training_data": {"rows": len(train_df), "default_rate": float(train_df[TARGET].mean())},
             "validation_metrics": metrics,
             "feature_importance": importance,
+            "fairness_by_group": fairness,
             "features": FEATURES,
             "excluded_attributes": ["cpf (pseudonimizado e descartado)", "sexo", "raça/cor", "religião",
                                     "orientação sexual", "dados de saúde"],
