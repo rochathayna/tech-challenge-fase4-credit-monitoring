@@ -1,0 +1,113 @@
+{
+  "run_id": "20261118T023721-a429b5",
+  "baseline": {
+    "roc_auc": 0.9510436972697185,
+    "accuracy": 0.9413152462400471,
+    "precision": 0.9742173112338858,
+    "recall": 0.7408963585434174,
+    "f1": 0.841686555290374,
+    "default_rate_real": 0.2105573577115895,
+    "default_rate_predicted": 0.16012975523444412
+  },
+  "months": [
+    {
+      "month": 1,
+      "status": "healthy",
+      "roc_auc": 0.9409175674605667,
+      "bad_rate_approved": 0.07288401253918496,
+      "drifted_features": [],
+      "alerts": []
+    },
+    {
+      "month": 2,
+      "status": "healthy",
+      "roc_auc": 0.9121286773499163,
+      "bad_rate_approved": 0.09765940274414851,
+      "drifted_features": [],
+      "alerts": []
+    },
+    {
+      "month": 3,
+      "status": "critical",
+      "roc_auc": 0.8912392506142506,
+      "bad_rate_approved": 0.12447786131996658,
+      "drifted_features": [
+        "loan_int_rate"
+      ],
+      "alerts": [
+        "FEATURE_DRIFT",
+        "CONCEPT_DRIFT",
+        "CALIBRATION"
+      ]
+    },
+    {
+      "month": 4,
+      "status": "critical",
+      "roc_auc": 0.8944567954357111,
+      "bad_rate_approved": 0.136443661971831,
+      "drifted_features": [
+        "loan_int_rate",
+        "loan_amnt"
+      ],
+      "alerts": [
+        "FEATURE_DRIFT",
+        "PREDICTION_DRIFT",
+        "CONCEPT_DRIFT",
+        "CALIBRATION"
+      ]
+    },
+    {
+      "month": 5,
+      "status": "critical",
+      "roc_auc": 0.8987055065293765,
+      "bad_rate_approved": 0.1522748375116063,
+      "drifted_features": [
+        "loan_int_rate",
+        "loan_amnt",
+        "loan_percent_income",
+        "loan_grade"
+      ],
+      "alerts": [
+        "DATASET_DRIFT",
+        "FEATURE_DRIFT",
+        "PREDICTION_DRIFT",
+        "CONCEPT_DRIFT",
+        "CALIBRATION"
+      ]
+    },
+    {
+      "month": 6,
+      "status": "critical",
+      "roc_auc": 0.8779039603389636,
+      "bad_rate_approved": 0.20758483033932135,
+      "drifted_features": [
+        "loan_int_rate",
+        "loan_percent_income",
+        "loan_amnt",
+        "loan_grade"
+      ],
+      "alerts": [
+        "DATASET_DRIFT",
+        "FEATURE_DRIFT",
+        "FEATURE_DRIFT",
+        "PREDICTION_DRIFT",
+        "CONCEPT_DRIFT",
+        "CALIBRATION"
+      ]
+    }
+  ],
+  "features": [
+    "person_age",
+    "person_income",
+    "person_emp_length",
+    "loan_amnt",
+    "loan_int_rate",
+    "loan_percent_income",
+    "cb_person_cred_hist_length",
+    "person_home_ownership",
+    "loan_intent",
+    "loan_grade",
+    "cb_person_default_on_file"
+  ],
+  "production_months": 6
+}

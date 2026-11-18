@@ -1,0 +1,108 @@
+{
+  "model": "XGBClassifier (sklearn Pipeline + OneHotEncoder)",
+  "version": "1.0.0",
+  "objective": "Probabilidade de inadimplência (loan_status=1) para apoio à decisão de crédito",
+  "decision_threshold": 0.5,
+  "training_data": {
+    "rows": 10170,
+    "default_rate": 0.21071779744346117
+  },
+  "validation_metrics": {
+    "roc_auc": 0.9510436972697185,
+    "accuracy": 0.9413152462400471,
+    "precision": 0.9742173112338858,
+    "recall": 0.7408963585434174,
+    "f1": 0.841686555290374,
+    "default_rate_real": 0.2105573577115895,
+    "default_rate_predicted": 0.16012975523444412
+  },
+  "feature_importance": {
+    "loan_grade": 0.2972298860549927,
+    "person_home_ownership": 0.2545608580112457,
+    "loan_intent": 0.17686139047145844,
+    "loan_percent_income": 0.11667097359895706,
+    "loan_int_rate": 0.04532191902399063,
+    "person_income": 0.030475925654172897,
+    "cb_person_default_on_file": 0.02227122336626053,
+    "person_emp_length": 0.020607231184840202,
+    "person_age": 0.014223572798073292,
+    "loan_amnt": 0.013463139533996582,
+    "cb_person_cred_hist_length": 0.008313986472785473
+  },
+  "fairness_by_group": {
+    "faixa_etaria": {
+      "18-25": {
+        "n": 1588,
+        "approval_rate": 0.8217884130982368,
+        "default_rate_real": 0.22984886649874056,
+        "roc_auc": 0.9642625925469596,
+        "good_payer_approval_rate": 0.9950940310711366,
+        "disparate_impact": 0.9594180259714852
+      },
+      "26-35": {
+        "n": 1443,
+        "approval_rate": 0.8565488565488566,
+        "default_rate_real": 0.19265419265419265,
+        "roc_auc": 0.9422052057924476,
+        "good_payer_approval_rate": 0.9957081545064378,
+        "disparate_impact": 1.0
+      },
+      "36+": {
+        "n": 360,
+        "approval_rate": 0.8527777777777777,
+        "default_rate_real": 0.19722222222222222,
+        "roc_auc": 0.9299186120181296,
+        "good_payer_approval_rate": 0.9896193771626297,
+        "disparate_impact": 0.9955973570658035
+      }
+    },
+    "moradia": {
+      "MORTGAGE": {
+        "n": 1362,
+        "approval_rate": 0.9390602055800293,
+        "default_rate_real": 0.12041116005873716,
+        "roc_auc": 0.8898825277902194,
+        "good_payer_approval_rate": 0.994991652754591,
+        "disparate_impact": 1.0
+      },
+      "OWN": {
+        "n": 270,
+        "approval_rate": 0.9222222222222223,
+        "default_rate_real": 0.08518518518518518,
+        "roc_auc": 0.9996479493046998,
+        "good_payer_approval_rate": 1.0,
+        "disparate_impact": 0.9820693249934845
+      },
+      "RENT": {
+        "n": 1750,
+        "approval_rate": 0.7502857142857143,
+        "default_rate_real": 0.3,
+        "roc_auc": 0.9628579203109817,
+        "good_payer_approval_rate": 0.9934693877551021,
+        "disparate_impact": 0.7989750921478834
+      }
+    }
+  },
+  "features": [
+    "person_age",
+    "person_income",
+    "person_emp_length",
+    "loan_amnt",
+    "loan_int_rate",
+    "loan_percent_income",
+    "cb_person_cred_hist_length",
+    "person_home_ownership",
+    "loan_intent",
+    "loan_grade",
+    "cb_person_default_on_file"
+  ],
+  "excluded_attributes": [
+    "cpf (pseudonimizado e descartado)",
+    "sexo",
+    "raça/cor",
+    "religião",
+    "orientação sexual",
+    "dados de saúde"
+  ],
+  "intended_use": "Apoio à decisão com revisão humana garantida (art. 20 LGPD)"
+}

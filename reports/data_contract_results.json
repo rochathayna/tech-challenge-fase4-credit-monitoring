@@ -1,0 +1,145 @@
+{
+  "accepted": {
+    "raw_kaggle_ingest": false,
+    "reference_dataset": true,
+    "corrupted_partner_batch": false
+  },
+  "violations": {
+    "raw_kaggle_ingest": [
+      {
+        "schema_context": "Column",
+        "column": "loan_int_rate",
+        "rule": "R1_sem_nulos",
+        "violations": 2498
+      },
+      {
+        "schema_context": "DataFrameSchema",
+        "column": "<linha>",
+        "rule": "R6_emprego_coerente_com_idade",
+        "violations": 715
+      },
+      {
+        "schema_context": "Column",
+        "column": "person_emp_length",
+        "rule": "R1_sem_nulos",
+        "violations": 713
+      },
+      {
+        "schema_context": "DataFrameSchema",
+        "column": "<linha>",
+        "rule": "R8_coerencia_comprometimento_renda",
+        "violations": 226
+      },
+      {
+        "schema_context": "DataFrameSchema",
+        "column": "<linha>",
+        "rule": "R4_registro_duplicado",
+        "violations": 224
+      },
+      {
+        "schema_context": "Column",
+        "column": "person_age",
+        "rule": "R2_idade_18_100",
+        "violations": 4
+      },
+      {
+        "schema_context": "Column",
+        "column": "client_id",
+        "rule": "R4_client_id_duplicado",
+        "violations": 4
+      },
+      {
+        "schema_context": "Column",
+        "column": "person_income",
+        "rule": "R3_renda_teto",
+        "violations": 2
+      },
+      {
+        "schema_context": "Column",
+        "column": "person_emp_length",
+        "rule": "R6_tempo_emprego",
+        "violations": 2
+      },
+      {
+        "schema_context": "Column",
+        "column": "loan_amnt",
+        "rule": "tipo_invalido:dtype('float64')",
+        "violations": 1
+      },
+      {
+        "schema_context": "Column",
+        "column": "person_income",
+        "rule": "tipo_invalido:dtype('float64')",
+        "violations": 1
+      }
+    ],
+    "corrupted_partner_batch": [
+      {
+        "schema_context": "DataFrameSchema",
+        "column": "<linha>",
+        "rule": "R8_coerencia_comprometimento_renda",
+        "violations": 35
+      },
+      {
+        "schema_context": "DataFrameSchema",
+        "column": "<linha>",
+        "rule": "R4_registro_duplicado",
+        "violations": 30
+      },
+      {
+        "schema_context": "Column",
+        "column": "client_id",
+        "rule": "R4_client_id_duplicado",
+        "violations": 30
+      },
+      {
+        "schema_context": "Column",
+        "column": "person_age",
+        "rule": "R2_idade_18_100",
+        "violations": 26
+      },
+      {
+        "schema_context": "DataFrameSchema",
+        "column": "<linha>",
+        "rule": "R6_emprego_coerente_com_idade",
+        "violations": 26
+      },
+      {
+        "schema_context": "Column",
+        "column": "person_income",
+        "rule": "R1_sem_nulos",
+        "violations": 25
+      },
+      {
+        "schema_context": "Column",
+        "column": "loan_int_rate",
+        "rule": "R7_taxa_juros",
+        "violations": 10
+      },
+      {
+        "schema_context": "Column",
+        "column": "loan_intent",
+        "rule": "R5_finalidade",
+        "violations": 10
+      },
+      {
+        "schema_context": "Column",
+        "column": "person_emp_length",
+        "rule": "R6_tempo_emprego",
+        "violations": 10
+      },
+      {
+        "schema_context": "Column",
+        "column": "person_income",
+        "rule": "R3_renda_positiva",
+        "violations": 10
+      },
+      {
+        "schema_context": "DataFrameSchema",
+        "column": "<linha>",
+        "rule": "R9_coluna_nao_prevista:cpf",
+        "violations": 1
+      }
+    ]
+  }
+}
