@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.env
+# artefatos regeráveis
+mlflow.db
+mlartifacts/
+mlruns/
+models/*.joblib
+data/processed/
+data/production/
+data/quarantine/*.csv
+!data/quarantine/.gitkeep
