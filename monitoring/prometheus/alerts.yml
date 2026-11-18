@@ -1,0 +1,45 @@
+groups:
+  - name: credit-scoring-drift
+    rules:
+      - alert: ConceptDrift_AUC
+        expr: credit_model_roc_auc < on() (credit_model_roc_auc_baseline - 0.05)
+        labels: { severity: critical }
+        annotations:
+          summary: "ROC AUC caiu mais de 0,05 vs. baseline"
+          description: "AUC atual {{ $value | printf \"%.3f\" }}. Abrir ciclo de retreino."
+      - alert: DatasetDrift
+        expr: credit_drift_share >= 0.30
+        labels: { severity: critical }
+        annotations:
+          summary: "≥ 30% das features com drift"
+          description: "Fração com drift: {{ $value | humanizePercentage }}."
+      - alert: FeatureDrift
+        expr: credit_feature_psi >= 0.25
+        labels: { severity: high }
+        annotations:
+          summary: "Drift significativo em {{ $labels.feature }}"
+          description: "PSI = {{ $value | printf \"%.2f\" }}"
+      - alert: PredictionDrift
+        expr: credit_prediction_psi >= 0.10
+        labels: { severity: high }
+        annotations:
+          summary: "Distribuição do score do modelo mudou"
+          description: "PSI do score = {{ $value | printf \"%.2f\" }}"
+      - alert: Calibration
+        expr: credit_default_rate{kind="real"} - ignoring(kind) credit_default_rate{kind="prevista"} >= 0.08
+        labels: { severity: high }
+        annotations:
+          summary: "Modelo subestima a inadimplência"
+          description: "Diferença real − prevista = {{ $value | humanizePercentage }}"
+      - alert: BadRateApprovedHigh
+        expr: credit_bad_rate_approved >= 0.15
+        labels: { severity: critical }
+        annotations:
+          summary: "Inadimplência entre aprovados acima de 15%"
+          description: "{{ $value | humanizePercentage }} dos aprovados inadimplentes"
+      - alert: DataContractBatchBlocked
+        expr: increase(credit_batches_total{result="bloqueado"}[1m]) > 0
+        labels: { severity: high }
+        annotations:
+          summary: "Lote bloqueado pelo contrato de dados"
+          description: "Lote em quarentena; reenvio solicitado ao parceiro."

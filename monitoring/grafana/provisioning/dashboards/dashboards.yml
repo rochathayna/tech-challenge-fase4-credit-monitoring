@@ -1,0 +1,7 @@
+apiVersion: 1
+providers:
+  - name: credit-scoring
+    folder: Tech Challenge
+    type: file
+    options:
+      path: /var/lib/grafana/dashboards
