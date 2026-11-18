@@ -8,6 +8,7 @@ Para cada lote mensal de produção gera:
 from __future__ import annotations
 
 import json
+from datetime import datetime
 
 import numpy as np
 import pandas as pd
@@ -32,7 +33,8 @@ def _definition() -> DataDefinition:
     )
 
 
-def evidently_report(reference: pd.DataFrame, current: pd.DataFrame, html_path, with_performance=True):
+def evidently_report(reference: pd.DataFrame, current: pd.DataFrame, html_path, with_performance=True,
+                     timestamp=None):
     dd = _definition()
     cols = [c for c in reference.columns if c in FEATURES + [TARGET, PREDICTION, PREDICTION_PROBA]]
     ref = Dataset.from_pandas(reference[cols], data_definition=dd)
@@ -45,9 +47,9 @@ def evidently_report(reference: pd.DataFrame, current: pd.DataFrame, html_path, 
     ]
     if with_performance:
         metrics.append(ClassificationPreset())
-    snapshot = Report(metrics, include_tests=True).run(cur, ref)
+    snapshot = Report(metrics, include_tests=True).run(cur, ref, timestamp=timestamp)
     snapshot.save_html(str(html_path))
-    return snapshot.dict()
+    return snapshot
 
 
 def _parse_evidently(d: dict) -> dict:
@@ -65,11 +67,19 @@ def _parse_evidently(d: dict) -> dict:
     return out
 
 
+def month_timestamp(month: int) -> datetime:
+    """Data simulada de cada lote (um por mês, a partir de jan/2026)."""
+    return datetime(2026, month, 28, 12, 0)
+
+
 def analyze_month(month: int, current: pd.DataFrame, reference_scored: pd.DataFrame,
-                  baseline_metrics: dict) -> dict:
+                  baseline_metrics: dict, workspace=None, project_id=None) -> dict:
     DRIFT_DIR.mkdir(parents=True, exist_ok=True)
     html = DRIFT_DIR / f"month_{month:02d}.html"
-    ev = _parse_evidently(evidently_report(reference_scored, current, html))
+    snapshot = evidently_report(reference_scored, current, html, timestamp=month_timestamp(month))
+    ev = _parse_evidently(snapshot.dict())
+    if workspace is not None:   # Evidently UI: histórico de execuções para o painel de monitoramento
+        workspace.add_run(project_id, snapshot, name=f"Mês {month}")
     custom = feature_drift_table(reference_scored, current)
 
     perf = classification_metrics(current[TARGET], current[PREDICTION_PROBA])

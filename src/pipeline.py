@@ -23,6 +23,7 @@ from .causal import run_causal_analysis  # noqa: E402
 from .config import FEATURES, MODEL_PATH, PRODUCTION_MONTHS, REPORTS_DIR, TARGET  # noqa: E402
 from .data_prep import build_datasets  # noqa: E402
 from .detect_drift import analyze_month  # noqa: E402
+from .evidently_workspace import create_project  # noqa: E402
 from .logging_utils import RUN_ID, log_event, read_logs, stage_timer  # noqa: E402
 from .monitoring import build_dashboard, export_prometheus, log_month_to_mlflow  # noqa: E402
 from .simulate_drift import build_production_batches  # noqa: E402
@@ -54,6 +55,7 @@ def main() -> None:
     model = joblib.load(MODEL_PATH)
     reference_scored = pd.read_csv(REFERENCE_SCORED_PATH)
     summaries = []
+    workspace, project_id = create_project()
     with stage_timer("production_monitoring"):
         for month, batch in batches.items():
             name = f"production_month_{month:02d}"
@@ -77,7 +79,7 @@ def main() -> None:
 
             # rótulos chegam depois (performance window de ~90 dias) e são unidos por client_id
             labeled = scored.merge(batch[["client_id", TARGET]], on="client_id")
-            summary = analyze_month(month, labeled, reference_scored, baseline)
+            summary = analyze_month(month, labeled, reference_scored, baseline, workspace, project_id)
             summaries.append(summary)
             for a in summary["alerts"]:
                 log_event("drift_detection", "alert", "alert", batch=name, alert_type=a["type"],

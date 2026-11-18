@@ -12,3 +12,5 @@ data/processed/
 data/production/
 data/quarantine/*.csv
 !data/quarantine/.gitkeep
+evidently_workspace/
+_site/
