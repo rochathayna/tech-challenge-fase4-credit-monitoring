@@ -11,7 +11,7 @@
       "loan_percent_income": 0.18415806254029943,
       "cb_person_cred_hist_length": 0.048401532065650045,
       "person_home_ownership": 0.05007553520590974,
-      "loan_intent": 0.007695796895570095,
+      "loan_intent": 0.007695796895570097,
       "loan_grade": 0.10137064369524619,
       "cb_person_default_on_file": 0.021351584839462232,
       "prediction_proba": 0.24792535143550332,

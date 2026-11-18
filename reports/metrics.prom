@@ -29,24 +29,24 @@ credit_drift_alerts_total{type="PREDICTION_DRIFT"} 3.0
 credit_drift_alerts_total{type="DATASET_DRIFT"} 2.0
 # HELP credit_drift_alerts_created Alertas de drift emitidos
 # TYPE credit_drift_alerts_created gauge
-credit_drift_alerts_created{type="FEATURE_DRIFT"} 1.7949694681607654e+09
-credit_drift_alerts_created{type="CONCEPT_DRIFT"} 1.7949694681607754e+09
-credit_drift_alerts_created{type="CALIBRATION"} 1.7949694681607816e+09
-credit_drift_alerts_created{type="PREDICTION_DRIFT"} 1.7949694681607893e+09
-credit_drift_alerts_created{type="DATASET_DRIFT"} 1.7949694681607974e+09
+credit_drift_alerts_created{type="FEATURE_DRIFT"} 1.7950069867315412e+09
+credit_drift_alerts_created{type="CONCEPT_DRIFT"} 1.795006986731552e+09
+credit_drift_alerts_created{type="CALIBRATION"} 1.7950069867315593e+09
+credit_drift_alerts_created{type="PREDICTION_DRIFT"} 1.7950069867315683e+09
+credit_drift_alerts_created{type="DATASET_DRIFT"} 1.795006986731579e+09
 # HELP credit_batches_total Lotes processados por resultado
 # TYPE credit_batches_total counter
 credit_batches_total{result="blocked"} 3.0
 credit_batches_total{result="accepted"} 7.0
 # HELP credit_batches_created Lotes processados por resultado
 # TYPE credit_batches_created gauge
-credit_batches_created{result="blocked"} 1.794969468160834e+09
-credit_batches_created{result="accepted"} 1.794969468160839e+09
+credit_batches_created{result="blocked"} 1.7950069867316222e+09
+credit_batches_created{result="accepted"} 1.7950069867316275e+09
 # HELP credit_stage_duration_seconds Duração da etapa
 # TYPE credit_stage_duration_seconds gauge
-credit_stage_duration_seconds{stage="ingest_and_prepare"} 0.347
-credit_stage_duration_seconds{stage="data_contracts"} 0.436
-credit_stage_duration_seconds{stage="training"} 5.837
-credit_stage_duration_seconds{stage="drift_simulation"} 0.096
-credit_stage_duration_seconds{stage="production_monitoring"} 8.099
-credit_stage_duration_seconds{stage="causal_analysis"} 10.454
+credit_stage_duration_seconds{stage="ingest_and_prepare"} 0.553
+credit_stage_duration_seconds{stage="data_contracts"} 0.432
+credit_stage_duration_seconds{stage="training"} 8.066
+credit_stage_duration_seconds{stage="drift_simulation"} 0.107
+credit_stage_duration_seconds{stage="production_monitoring"} 10.42
+credit_stage_duration_seconds{stage="causal_analysis"} 11.524

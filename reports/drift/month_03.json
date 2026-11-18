@@ -12,7 +12,7 @@
       "cb_person_cred_hist_length": 0.028915022570008504,
       "person_home_ownership": 0.01224830163857274,
       "loan_intent": 0.0031238964593730484,
-      "loan_grade": 0.04361471841719446,
+      "loan_grade": 0.04361471841719447,
       "cb_person_default_on_file": 0.010882209049095645,
       "prediction_proba": 0.06298823543095274,
       "loan_status": 0.03888923396143333
