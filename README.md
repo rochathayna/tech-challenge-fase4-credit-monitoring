@@ -2,7 +2,6 @@
 
 > **Contexto.** Uma fintech de crédito tem um modelo de *Credit Scoring* em produção. Inflação, alta de juros e novos perfis de clientes levantaram a suspeita de **degradação silenciosa**. Este repositório constrói a camada de **sustentação e confiabilidade** do modelo: contratos de dados que barram lixo na entrada, simulação e detecção de *data drift* e *concept drift*, observabilidade centralizada do pipeline, análise causal da degradação e governança sob a LGPD.
 
-**Vídeo STAR (≤ 5 min):** `<<COLE AQUI O LINK DO VÍDEO>>` · roteiro em [`docs/roteiro_video_STAR.md`](docs/roteiro_video_STAR.md)
 
 ---
 
