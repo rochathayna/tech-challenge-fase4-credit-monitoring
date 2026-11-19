@@ -1,12 +1,13 @@
-pandas>=2.2
-numpy>=1.26
-scipy>=1.11
-scikit-learn>=1.5
-xgboost>=2.1
-pandera[pandas]>=0.24
-evidently>=0.7,<0.8
-mlflow>=2.20
-prometheus-client>=0.20
-plotly>=5.20
-joblib>=1.4
+# Versões testadas. pandas 3.1+ removeu funções que o Evidently 0.7 ainda usa.
+pandas>=2.2,<3.1
+numpy>=1.26,<3
+scipy>=1.11,<2
+scikit-learn>=1.5,<2
+xgboost>=2.1,<4
+pandera[pandas]>=0.24,<0.40
+evidently==0.7.23
+mlflow>=3.0,<4
+prometheus-client>=0.20,<1
+plotly>=5.20,<7
+joblib>=1.4,<2
 pytest>=8.0
